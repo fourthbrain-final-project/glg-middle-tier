@@ -19,22 +19,15 @@ async fn greet(name: web::Path<String>) -> impl Responder {
 async fn main() -> std::io::Result<()> {
     let path = env::current_dir()?;
     println!("{}", path.display()) ;
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let ssl_conf = load_rustls_config("certs/public.pem", "certs/private.pem") ;
+    let ssl_conf = load_rustls_config("certs/cert.pem", "certs/key.pem") ;
 
     HttpServer::new(|| {
         let cors = Cors::default()
-            .allowed_origin("http://localhost/")
-            .allowed_origin("http://127.0.0.1/")
-            .allowed_origin_fn(|origin, _req_head| {
-                origin.as_bytes().ends_with(b"localhost")
-            })
-            .allowed_origin_fn(|origin, _req_head| {
-                origin.as_bytes().ends_with(b"127.0.0.1")
-            })
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allow_any_origin()
+            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT, http::header::ORIGIN])
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600) ;
             
