@@ -19,3 +19,5 @@ Cargo.lock
 *.pem
 
 package*.json
+
+./node_modules
