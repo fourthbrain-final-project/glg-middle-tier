@@ -35,6 +35,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::default())
             .service(post_req::document_processor)
+            .service(post_req::classify_document)
 
     })
     .bind_rustls("127.0.0.1:8443", ssl_conf)?
