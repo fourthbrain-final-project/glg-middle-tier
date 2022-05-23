@@ -94,3 +94,26 @@ pub async fn topic_generator(topic: web::Json<TopicInput>) -> Result<impl Respon
 
     Ok(web::Json(content))
 }
+
+#[post("/entities")]
+pub async fn entity_extractor(doc: web::Json<Document>) -> Result<impl Responder> {
+    let client = Client::new() ;
+
+    let res = client.post("http://127.0.0.1:8000/entities")
+        .json(&doc)
+        .send()
+        .await
+        .unwrap()
+        .json::<NamedEntityOutput>()
+        .await ;
+    
+    let content: NamedEntityOutput = match res {
+        Ok(s) => s,
+        Err(_s) => {
+            println!("{:?}", _s) ;
+            NamedEntityOutput {entities: vec![]}
+        }
+    };
+
+    Ok(web::Json(content))
+}

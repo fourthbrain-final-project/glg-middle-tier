@@ -34,9 +34,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
-            .service(post_req::document_processor)
             .service(post_req::classify_document)
             .service(post_req::topic_generator)
+            .service(post_req::entity_extractor)
 
     })
     .bind_rustls("127.0.0.1:8443", ssl_conf)?
