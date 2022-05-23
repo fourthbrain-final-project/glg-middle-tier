@@ -1,15 +1,33 @@
 use actix_web::{post, web, Responder, Result} ;
+use reqwest::{Client} ;
 use serde::{Deserialize, Serialize} ;
 use uuid::Uuid ;
 
 #[derive(Serialize, Deserialize)]
 pub struct Document {
-    document_content: String
+    document: String
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct TopicInput {
-    topic: String
+    document: String ,
+    topic: String ,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TopicOutput {
+    labels: Vec<String>,
+    scores: Vec<f32>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ClassifyOutput {
+    label: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct NamedEntityOutput {
+    entities: Vec<String>
 }
 
 #[derive(Serialize, Deserialize)]
@@ -33,12 +51,46 @@ pub async fn document_processor(doc: web::Json<Document>) -> Result<impl Respond
 
 #[post("/classify")]
 pub async fn classify_document(doc: web::Json<Document>) -> Result<impl Responder> {
-    let id = Uuid::new_v4() ;
-    let status = PostSuccess {
-        code: 201,
-        message : "Success".into(),
-        job_id: id.to_string() ,
-    } ;
+    let client = Client::new() ;
 
-    Ok(web::Json(status))
+    //let new_doc: Document = Document { document: doc.document.to_string() } ;
+
+    let res = client.post("http://127.0.0.1:8000/classify")
+        .json(&doc)
+        .send()
+        .await
+        .unwrap()
+        .json::<ClassifyOutput>()
+        .await ;
+    
+    let content: ClassifyOutput = match res{
+        Ok(s) => s,
+        Err(_s) => {
+            ClassifyOutput { label: "none".into()}
+        }
+    } ;
+    
+    Ok(web::Json(content))
+}
+#[post("/topics")]
+pub async fn topic_generator(topic: web::Json<TopicInput>) -> Result<impl Responder> {
+    let client = Client::new() ;
+
+    let res = client.post("http://127.0.0.1:8000/topics")
+        .json(&topic)
+        .send()
+        .await
+        .unwrap()
+        .json::<TopicOutput>()
+        .await ;
+    
+    let content: TopicOutput = match res {
+        Ok(s) => s,
+        Err(_s) => {
+            println!("{:?}", _s) ;
+            TopicOutput {labels: vec![], scores: vec![]}
+        }
+    };
+
+    Ok(web::Json(content))
 }
