@@ -2,7 +2,7 @@ mod site_content ;
 mod tls_config ;
 
 use actix_cors::Cors ;
-use actix_web::{get, guard, web, App, HttpServer, Responder, http, middleware::Logger} ;
+use actix_web::{get, web, App, HttpServer, Responder, http, middleware::Logger} ;
 use env_logger ;
 use site_content::post_requests as post_req ;
 

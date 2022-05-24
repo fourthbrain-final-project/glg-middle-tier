@@ -37,6 +37,7 @@ pub struct PostSuccess {
     job_id: String ,
 }
 
+/*
 #[post("/document")]
 pub async fn document_processor(doc: web::Json<Document>) -> Result<impl Responder> {
     let id = Uuid::new_v4() ;
@@ -47,7 +48,7 @@ pub async fn document_processor(doc: web::Json<Document>) -> Result<impl Respond
     } ;
 
     Ok(web::Json(status))
-}
+}*/
 
 #[post("/classify")]
 pub async fn classify_document(doc: web::Json<Document>) -> Result<impl Responder> {
