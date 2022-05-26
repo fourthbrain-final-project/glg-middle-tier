@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
     println!("{}", path.display()) ;
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let ssl_conf = load_rustls_config("certs/cert.pem", "certs/key.pem") ;
+    //let ssl_conf = load_rustls_config("certs/cert.pem", "certs/key.pem") ;
 
     HttpServer::new(|| {
         let cors = Cors::default()
@@ -39,7 +39,7 @@ async fn main() -> std::io::Result<()> {
             .service(post_req::entity_extractor)
 
     })
-    .bind_rustls("127.0.0.1:8443", ssl_conf)?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
